@@ -8735,7 +8735,12 @@ class FileHandle:
         if result.nbytes != nbytes:
             raise ValueError('size mismatch')
 
-        n = self._fh.readinto(result)
+        try:
+            n = self._fh.readinto(result)
+        except AttributeError:
+            file_bytes = self._fh.read()
+            n = io.BytesIO(file_bytes).readinto(result)
+
         if n != nbytes:
             raise ValueError(f'failed to read {nbytes} bytes')
 
